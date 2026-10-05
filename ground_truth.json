@@ -1,0 +1,10 @@
+{
+  "image": "test_files/FontQuadrantsDemo.jpg",
+  "description": "Expected phrases that must be found somewhere in the full screenshot. Phrase coordinates are intentionally omitted and are never supplied to the benchmark.",
+  "phrases": {
+    "top_left_phrase": "quiver cabinet frozen",
+    "top_right_phrase": "kitchen thistle willow",
+    "bottom_left_phrase": "orchard noodle mosaic",
+    "bottom_right_phrase": "distant cornet clever"
+  }
+}
