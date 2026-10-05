@@ -2,81 +2,180 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Font Quadrants Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Font and Light/Dark OCR Demo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo&family=Atkinson+Hyperlegible&family=Courier+Prime&family=JetBrains+Mono&display=swap">
 <style>
   :root {
-    --bg: #f3f5f2; --fg: #1d2a24; --muted: #6b7a72; --line: #cdd5cf; --btn: #1d2a24; --btn-fg: #f3f5f2;
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --page: #f3f5f2;
+    --ink: #1d2a24;
+    --muted: #627168;
+    --rule: #cdd5cf;
+    font-family: system-ui, sans-serif;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --bg: #161c19; --fg: #e8eee9; --muted: #8b9a92; --line: #2e3a34; --btn: #e8eee9; --btn-fg: #161c19; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); }
+  main { width: 100%; max-width: 3200px; margin: 0 auto; padding: 30px 36px 52px; }
+  header { margin-bottom: 8px; }
+  h1 { margin: 0; font-size: 22px; font-weight: 650; }
+  .legend { margin: 5px 0 18px; color: var(--muted); font-size: 14px; }
+  .font-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .font-quad { min-width: 0; padding: 17px; border: 1px solid var(--rule); border-radius: 8px; background: #e8ede9; }
+  .font-quad > h2 { margin: 0 0 3px; font-size: 19px; }
+  .kind { margin: 0 0 9px; color: var(--muted); font: 12px system-ui, sans-serif; }
+  .mode-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mode {
+    min-width: 0;
+    padding: 12px 12px 9px;
+    border: 1px solid #cdd5cf;
+    border-radius: 6px;
+    background: #fff;
+    color: #1d2a24;
   }
-  :root[data-theme="dark"] { --bg: #161c19; --fg: #e8eee9; --muted: #8b9a92; --line: #2e3a34; --btn: #e8eee9; --btn-fg: #161c19; }
-  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
-  body { margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }
-  main { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; }
-  header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
-  h1 { font-size: 20px; font-weight: 600; margin: 0; }
-  .legend { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
-  button { font: 600 15px system-ui, sans-serif; background: var(--btn); color: var(--btn-fg); border: 0; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
-  button:focus-visible { outline: 3px solid var(--muted); outline-offset: 2px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
-  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
-  .quad { padding: 18px 18px 8px; border: 1px solid var(--line); min-width: 0; }
-  .quad h2 { margin: 0; font-size: 22px; }
-  .quad .kind { margin: 2px 0 8px; font: 13px system-ui, sans-serif; color: var(--muted); }
-  .quad .test { margin: 0 0 8px; font-size: 20px; letter-spacing: 0.08em; }
-  .row { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line); }
-  .size { flex: 0 0 40px; font: 12px system-ui, sans-serif; color: var(--muted); }
-  .box { flex: none; box-sizing: border-box; background: var(--line); border: 1px solid var(--muted); }
-  .phrase { line-height: 1.15; overflow-wrap: anywhere; }
+  .mode.dark {
+    border-color: #394a43;
+    background: #111a16;
+    color: #e9f5ec;
+  }
+  .mode h3 { margin: 0 0 5px; font: 600 12px system-ui, sans-serif; }
+  .sample { margin: 0 0 6px; font-size: 15px; letter-spacing: .04em; }
+  .row { display: flex; align-items: baseline; gap: 6px; padding: 4px 0; border-top: 1px solid #dce3de; white-space: nowrap; }
+  .dark .row { border-color: #394a43; }
+  .size { flex: 0 0 25px; color: #627168; font: 9px system-ui, sans-serif; }
+  .dark .size { color: #a9c1b2; }
+  .phrase { flex: 0 0 auto; line-height: 1.15; white-space: nowrap; }
+  .arimo { font-family: Arimo, Arial, Helvetica, sans-serif; }
+  .courier { font-family: "Courier Prime", "Courier New", monospace; }
+  .atkinson { font-family: "Atkinson Hyperlegible", Verdana, sans-serif; }
+  .jetbrains { font-family: "JetBrains Mono", Consolas, monospace; }
+  @media (max-width: 2000px) { .font-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1050px) {
+    main { padding: 20px 12px 36px; }
+    .font-quad { padding: 10px; }
+    .mode-pair { grid-template-columns: 1fr; gap: 8px; }
+    .mode { padding: 9px 10px 6px; }
+    .row { overflow-x: auto; }
+  }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <h1>Three words at 10–24px, four fonts</h1>
-    <button id="btn" type="button">New words</button>
+    <h1>Fixed OCR phrases · four font quadrants · light and dark side by side · 8–24px</h1>
   </header>
-  <p class="legend">Left: proportional width. Right: fixed width. Top: more look-alike characters. Bottom: fewer. Every quadrant has its own words, and no word repeats anywhere on the page.</p>
-  <div class="grid" id="grid"></div>
+  <p class="legend">Each font quadrant pairs the same fixed phrases in light and dark colors. Rows run from 8px through 24px; no text or phrase positions are randomized.</p>
+  <div class="font-grid" id="font-grid" aria-label="Four font quadrants, each with light and dark samples"></div>
 </main>
 <script>
+  const sizes = [8, 10, 12, 14, 16, 18, 20, 22, 24];
   const fonts = [
-    { name: "Arimo", stack: '"Arimo", Arial, Helvetica, sans-serif', kind: "Proportional · more look-alikes (I, l and 1 are similar)" },
-    { name: "Courier Prime", stack: '"Courier Prime", "Courier New", monospace', kind: "Fixed width · more look-alikes (plain 0 and O)" },
-    { name: "Atkinson Hyperlegible", stack: '"Atkinson Hyperlegible", Verdana, sans-serif', kind: "Proportional · fewer look-alikes (distinct I, l, 1, 0, O)" },
-    { name: "JetBrains Mono", stack: '"JetBrains Mono", Consolas, monospace', kind: "Fixed width · fewer look-alikes (distinct I, l, 1, 0, O)" }
+    {
+      id: "arimo", name: "Arimo", className: "arimo",
+      kind: "Proportional · similar I, l, and 1",
+      sample: "Il1| 0O8o",
+      lightPhrases: [
+        "quiver cabinet frozen 4827316", "kitchen thistle willow 9152048", "velvet wagon kernel 6371852",
+        "ivory violin lilac 2846901", "million pillar valley 7538164", "yellow zephyr pocket 1964370",
+        "ribbon glacier gentle 5283047", "sailor silver basket 8416729", "tunnel marlin nickel 3709581"
+      ],
+      darkPhrases: [
+        "cobalt meadow sparrow 6248193", "ginger thimble lantern 3085726", "plucky walnut blossom 9514068",
+        "crystal meadow spindle 4720631", "marigold tumble velvet 8163952", "sprightly cedar acorn 2397485",
+        "twilight pebble daisy 7051824", "sunbeam orchard fiddle 1836409", "whimsy pocket bracken 5472916"
+      ]
+    },
+    {
+      id: "courier_prime", name: "Courier Prime", className: "courier",
+      kind: "Fixed width · similar 0 and O",
+      sample: "0O8o Il1|",
+      lightPhrases: [
+        "amber hollow brisk 6042817", "distant clever rusty 2379150", "lantern meadow engine 8963402",
+        "orchard compass thunder 4517286", "pebble window river 7280641", "signal carpet garden 3158924",
+        "falcon mirror copper 9701365", "willow ember quartz 5834270", "drift marble saddle 1426893"
+      ],
+      darkPhrases: [
+        "foxglove kettle shimmer 3918274", "breezy acrobat plumage 7604318", "cinnamon rocket fern 2185693",
+        "puzzling hammock cricket 8452071", "dandelion turnip comet 6301948", "flannel hummingbird biscuit 1729580",
+        "sunflower zipper lagoon 5046832", "cucumber labyrinth toast 9872146", "frosty macaroni velvet 3268059"
+      ]
+    },
+    {
+      id: "atkinson_hyperlegible", name: "Atkinson Hyperlegible", className: "atkinson",
+      kind: "Proportional · distinct I, l, 1, 0, O",
+      sample: "Il1| 0O8o",
+      lightPhrases: [
+        "tundra whisper anchor 8192753", "million illicit rooftop 3604182", "violin pillar olive 7429516",
+        "morning balloon mountain 2057839", "cornet noodle holiday 6841327", "pilot library iodine 9315604",
+        "camera planet forest 4178295", "candle blanket oyster 5682041", "magnet pocket thistle 2937468"
+      ],
+      darkPhrases: [
+        "lavender hammock orbit 4173602", "raspberry compass flint 8526914", "jovial penguin trinket 2064387",
+        "pancake meadow zeppelin 7391052", "whistle acorn sapphire 5812763", "marshmallow tumble reed 9438206",
+        "velvet cactus tambourine 1657943", "biscuit thunder daffodil 6284317", "gossamer pickle lantern 3749501"
+      ]
+    },
+    {
+      id: "jetbrains_mono", name: "JetBrains Mono", className: "jetbrains",
+      kind: "Fixed width · distinct I, l, 1, 0, O",
+      sample: "Il1| 0O8o",
+      lightPhrases: [
+        "walnut fabric jungle 7562184", "kettle lemon marlin 1846372", "orbit parcel quiver 6294051",
+        "raven sparrow timber 8431706", "umber vessel wagon 2975318", "bramble cinder dolphin 5108642",
+        "fennel granite hazel 9724163", "juniper kernel linen 4350897", "mosaic nectar opal 1683245"
+      ],
+      darkPhrases: [
+        "tangerine cobweb puddle 8157204", "knapsack oatmeal igloo 4623185", "dizzy firefly velvet 9305716",
+        "banjo waterfall mitten 2746039", "blueberry orbit whisker 6581942", "marble jellyfish tumble 1038467",
+        "peppermint thicket banister 7462951", "kangaroo teacup frost 5290738", "quartz badger ribbon 3816470"
+      ]
+    }
   ];
-  const words = ["quiet", "amber", "hollow", "brisk", "velvet", "distant", "clever", "rusty", "gentle", "wild", "frozen", "golden", "sleepy", "bright", "crooked", "harbor", "lantern", "meadow", "engine", "orchard", "compass", "thunder", "pebble", "window", "river", "signal", "carpet", "garden", "falcon", "mirror", "copper", "willow", "ember", "quartz", "drift", "marble", "saddle", "tundra", "whisper", "anchor", "million", "illicit", "rooftop", "violin", "pillar", "lilac", "olive", "tunnel", "cabinet", "morning", "kitchen", "lobby", "balloon", "mountain", "cornet", "noodle", "holiday", "pilot", "library", "iodine", "sailor", "ribbon", "bottle", "camera", "planet", "silver", "basket", "forest", "candle", "blanket", "oyster", "magnet", "pocket", "valley", "thistle", "walnut", "fabric", "glacier", "jungle", "kettle", "lemon", "marlin", "nickel", "orbit", "parcel", "quiver", "raven", "sparrow", "timber", "umber", "vessel", "wagon", "yellow", "zephyr", "bramble", "cinder", "dolphin", "fennel", "granite", "hazel", "ivory", "juniper", "kernel", "linen", "mosaic", "nectar", "opal", "petal", "quill", "rubble", "sorrel", "tassel", "urchin", "velour", "wicker"];
-  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const grid = document.getElementById("grid");
-  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
-  function render() {
-    grid.innerHTML = "";
-    const w = shuffle(words);
-    fonts.forEach((f, fi) => {
-      const phrases = [];
-      for (let i = 0; i < 8; i++) phrases.push(w.slice((fi * 8 + i) * 3, (fi * 8 + i) * 3 + 3).join(" "));
-      const q = el("section", "quad");
-      q.style.fontFamily = f.stack;
-      q.append(el("h2", "", f.name), el("p", "kind", f.kind), el("p", "test", "Il1| O0o"));
-      for (let px = 10, i = 0; px <= 24; px += 2, i++) {
-        const r = el("div", "row");
-        const b = el("span", "box"); b.style.width = b.style.height = px + "px";
-        const p = el("span", "phrase", phrases[i]); p.style.fontSize = px + "px";
-        r.append(el("span", "size", px + "px"), b, p);
-        q.append(r);
-      }
-      grid.append(q);
-    });
+
+  const grid = document.getElementById("font-grid");
+  for (const font of fonts) {
+    const quadrant = document.createElement("section");
+    quadrant.className = "font-quad";
+    quadrant.setAttribute("aria-labelledby", `heading-${font.id}`);
+    const heading = document.createElement("h2");
+    heading.id = `heading-${font.id}`;
+    heading.textContent = font.name;
+    const kind = document.createElement("p");
+    kind.className = "kind";
+    kind.textContent = font.kind;
+    const pair = document.createElement("div");
+    pair.className = "mode-pair";
+
+    for (const modeName of ["light", "dark"]) {
+      const phrases = modeName === "light" ? font.lightPhrases : font.darkPhrases;
+      const mode = document.createElement("section");
+      mode.className = `mode ${font.className}${modeName === "dark" ? " dark" : ""}`;
+      mode.setAttribute("aria-label", `${font.name} ${modeName} mode`);
+      const modeHeading = document.createElement("h3");
+      modeHeading.textContent = `${modeName === "light" ? "Light" : "Dark"} mode`;
+      const sample = document.createElement("p");
+      sample.className = "sample";
+      sample.textContent = font.sample;
+      mode.append(modeHeading, sample);
+
+      sizes.forEach((px, index) => {
+        const row = document.createElement("div");
+        row.className = "row";
+        const size = document.createElement("span");
+        size.className = "size";
+        size.textContent = `${px}px`;
+        const phrase = document.createElement("span");
+        phrase.className = "phrase";
+        phrase.style.fontSize = `${px}px`;
+        phrase.textContent = phrases[index];
+        phrase.dataset.truthKey = `${font.id}_${modeName}_${px}px`;
+        row.append(size, phrase);
+        mode.append(row);
+      });
+      pair.append(mode);
+    }
+    quadrant.append(heading, kind, pair);
+    grid.append(quadrant);
   }
-  document.getElementById("btn").addEventListener("click", render);
-  render();
 </script>
 </body>
 </html>

@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--image", type=Path, default=DEFAULT_IMAGE, help="Input screenshot.")
     parser.add_argument("--truth", type=Path, default=DEFAULT_TRUTH, help="JSON file containing expected phrases.")
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "results_full_image", help="Where full-image CSV, JSON, and text outputs are written.")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "results_light_dark", help="Where light/dark full-image results are written.")
     parser.add_argument("--repeats", type=int, default=2, help="Measured runs per configuration (default: 2).")
     parser.add_argument("--limit-configs", type=int, help="Run only the first N configs; useful for a quick smoke test.")
     parser.add_argument("--psm", type=int, nargs="+", choices=range(3, 14), default=list(DEFAULT_PSMS), help="Page segmentation modes to compare.")
@@ -144,6 +144,19 @@ def measure_config(
         name: sum(run["found"][name] for run in runs)
         for name in expected
     }
+    mode_counts = {mode: 0 for mode in ("light", "dark")}
+    mode_totals = {mode: 0 for mode in mode_counts}
+    font_mode_counts: dict[str, int] = {}
+    font_mode_totals: dict[str, int] = {}
+    for name, count in found_per_phrase.items():
+        match = re.fullmatch(r"(.+)_(light|dark)_(\d+)px", name)
+        if match:
+            font, mode, _size = match.groups()
+            group = f"{font}_{mode}"
+            mode_counts[mode] += count
+            mode_totals[mode] += len(runs)
+            font_mode_counts[group] = font_mode_counts.get(group, 0) + count
+            font_mode_totals[group] = font_mode_totals.get(group, 0) + len(runs)
     exact_runs = sum(all(run["found"].values()) for run in runs)
     total_phrase_checks = len(expected) * len(runs)
     return {
@@ -157,6 +170,14 @@ def measure_config(
         "all_runs_exact": exact_runs == len(runs),
         "found_phrases": found_per_phrase,
         "phrase_accuracy": sum(found_per_phrase.values()) / total_phrase_checks,
+        "mode_phrase_accuracy": {
+            mode: mode_counts[mode] / mode_totals[mode]
+            for mode in mode_counts if mode_totals[mode]
+        },
+        "font_mode_phrase_accuracy": {
+            group: count / font_mode_totals[group]
+            for group, count in font_mode_counts.items()
+        },
         "recognized": representative["recognized"],
     }
 
@@ -167,6 +188,12 @@ def write_csv(path: Path, results: list[dict[str, Any]], phrase_names: list[str]
         "end_to_end_ms", "fully_exact_runs", "runs", "all_runs_exact", "phrase_accuracy",
     ]
     fields.extend(f"found_{name}" for name in phrase_names)
+    fields.extend(("light_phrase_accuracy", "dark_phrase_accuracy"))
+    groups = sorted({
+        "_".join(name.split("_")[:-2]) + "_" + name.split("_")[-2]
+        for name in phrase_names
+    })
+    fields.extend(f"accuracy_{group}" for group in groups)
     fields.append("ocr_text")
     with path.open("w", newline="", encoding="utf-8-sig") as output:
         writer = csv.DictWriter(
@@ -183,6 +210,12 @@ def write_csv(path: Path, results: list[dict[str, Any]], phrase_names: list[str]
             row.update({
                 f"found_{name}": result["found_phrases"][name]
                 for name in phrase_names
+            })
+            row["light_phrase_accuracy"] = result["mode_phrase_accuracy"].get("light", 0.0)
+            row["dark_phrase_accuracy"] = result["mode_phrase_accuracy"].get("dark", 0.0)
+            row.update({
+                f"accuracy_{group}": accuracy
+                for group, accuracy in result["font_mode_phrase_accuracy"].items()
             })
             row["ocr_text"] = result["recognized"]
             writer.writerow(row)
@@ -254,7 +287,7 @@ def main() -> int:
         "truth_file": str(args.truth),
         "repeats": args.repeats,
         "ground_truth_phrases": expected,
-        "scoring": "Each expected phrase is found when its contiguous case- and punctuation-insensitive word sequence occurs anywhere in the full-image OCR output.",
+        "scoring": "Each expected phrase is found when its contiguous case- and punctuation-insensitive word sequence occurs anywhere in the full-image OCR output. Results include aggregate detection accuracy for light versus dark mode and each font/mode pair.",
         "ranking": "all repeats containing every phrase first, then most fully exact repeats, phrase accuracy, and end-to-end milliseconds",
         "results": results,
     }
@@ -266,12 +299,22 @@ def main() -> int:
         f"{name} {count}/{best['runs']}"
         for name, count in best["found_phrases"].items()
     )
+    mode_summary = ", ".join(
+        f"{mode} {accuracy:.1%}"
+        for mode, accuracy in best["mode_phrase_accuracy"].items()
+    )
+    font_mode_summary = "\n".join(
+        f"  {group}: {accuracy:.1%}"
+        for group, accuracy in best["font_mode_phrase_accuracy"].items()
+    )
     (args.output_dir / "best.txt").write_text(
         f"Configuration: {best['config']}\n"
         f"Fully exact runs: {best['fully_exact_runs']}/{best['runs']}\n"
         f"Phrase accuracy across runs: {best['phrase_accuracy']:.2%}\n"
         f"Median OCR: {best['ocr_ms']:.2f} ms\n"
         f"Median end-to-end: {best['end_to_end_ms']:.2f} ms\n"
+        f"Mode detection: {mode_summary}\n"
+        f"Per-font/mode detection:\n{font_mode_summary}\n"
         f"Phrase detections across runs: {found_summary}\n\n"
         f"Full-image OCR output (representative run):\n{best['recognized']}\n",
         encoding="utf-8",
@@ -284,7 +327,9 @@ def main() -> int:
     )
     print(
         f"  {best['config']} - fully exact {best['fully_exact_runs']}/{best['runs']} runs, "
-        f"phrase accuracy {best['phrase_accuracy']:.1%}"
+        f"all-phrase accuracy {best['phrase_accuracy']:.1%}; "
+        f"light {best['mode_phrase_accuracy'].get('light', 0):.1%}, "
+        f"dark {best['mode_phrase_accuracy'].get('dark', 0):.1%}"
     )
     print(f"  {best['ocr_ms']:.1f} ms OCR; {best['end_to_end_ms']:.1f} ms including preprocessing (median)")
     print(f"  Results: {csv_path}\n           {json_path}\n           {args.output_dir / 'best.txt'}")
