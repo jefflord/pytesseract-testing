@@ -10,7 +10,7 @@ Find a fast and reliable Tesseract setup for recognizing known phrases in a 4K s
 
 The HTML has four font quadrants (Arimo, Courier Prime, Atkinson Hyperlegible, JetBrains Mono), each containing light and dark samples side by side. Every mode has nine fixed rows at 8, 10, 12, 14, 16, 18, 20, 22, and 24 pixels; each phrase has three words and a seven-digit number as its fourth token. Dark-mode text is different from its light-mode counterpart. `ground_truth.json` records all 72 font/mode/size phrases; keys are for reference only.
 
-The default sweep compares four image preparations (color, grayscale, grayscale with autocontrast, Otsu), 1× and 2× scales, and PSM 3, 6, 11, and 12. Each configuration is repeated; one warmup is excluded from timing. Results report total detection as well as independent light/dark and per-font/mode rates. The latest updated-image run found 122 of 144 phrase instances (84.72%) with grayscale 2× PSM 6: light detection was 86.1%, dark detection was 83.3%, and no configuration found all 72 phrases in both repeats.
+The default sweep compares four image preparations (color, grayscale, grayscale with autocontrast, Otsu), 1×, 2×, and 3× scales, and PSM 3, 6, 11, and 12. Each configuration is repeated; one warmup is excluded from timing. Results report total detection as well as independent light/dark and per-font/mode rates.
 
 ## Files
 

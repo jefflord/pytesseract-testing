@@ -1,50 +1,264 @@
-Configuration: full_image_grayscale_x2_psm6
-Fully exact runs: 0/2
-Phrase accuracy across runs: 84.72%
-Median OCR: 1825.06 ms
-Median end-to-end: 1960.51 ms
-Mode detection: light 86.1%, dark 83.3%
+Configuration: full_image_color_x3_psm11
+Fully exact runs: 0/3
+Phrase accuracy across runs: 90.28%
+Median OCR: 9587.68 ms
+Median end-to-end: 10585.76 ms
+Smallest tested size with 100% phrase detection: 14px
+Smallest 100% size by font/mode: arimo_light 10px, arimo_dark 8px, courier_prime_light 10px, courier_prime_dark 8px, atkinson_hyperlegible_light 10px, atkinson_hyperlegible_dark 10px, jetbrains_mono_light 8px, jetbrains_mono_dark 10px
+Detection by size: {'8px': 0.375, '10px': 0.875, '12px': 0.875, '14px': 1.0, '16px': 1.0, '18px': 1.0, '20px': 1.0, '22px': 1.0, '24px': 1.0}
+Mode detection: light 91.7%, dark 88.9%
 Per-font/mode detection:
-  arimo_light: 100.0%
-  arimo_dark: 100.0%
+  arimo_light: 88.9%
+  arimo_dark: 88.9%
   courier_prime_light: 88.9%
-  courier_prime_dark: 88.9%
-  atkinson_hyperlegible_light: 77.8%
-  atkinson_hyperlegible_dark: 77.8%
-  jetbrains_mono_light: 77.8%
-  jetbrains_mono_dark: 66.7%
-Phrase detections across runs: arimo_light_8px 2/2, arimo_light_10px 2/2, arimo_light_12px 2/2, arimo_light_14px 2/2, arimo_light_16px 2/2, arimo_light_18px 2/2, arimo_light_20px 2/2, arimo_light_22px 2/2, arimo_light_24px 2/2, arimo_dark_8px 2/2, arimo_dark_10px 2/2, arimo_dark_12px 2/2, arimo_dark_14px 2/2, arimo_dark_16px 2/2, arimo_dark_18px 2/2, arimo_dark_20px 2/2, arimo_dark_22px 2/2, arimo_dark_24px 2/2, courier_prime_light_8px 2/2, courier_prime_light_10px 2/2, courier_prime_light_12px 2/2, courier_prime_light_14px 2/2, courier_prime_light_16px 2/2, courier_prime_light_18px 2/2, courier_prime_light_20px 2/2, courier_prime_light_22px 2/2, courier_prime_light_24px 0/2, courier_prime_dark_8px 2/2, courier_prime_dark_10px 2/2, courier_prime_dark_12px 2/2, courier_prime_dark_14px 2/2, courier_prime_dark_16px 2/2, courier_prime_dark_18px 2/2, courier_prime_dark_20px 2/2, courier_prime_dark_22px 2/2, courier_prime_dark_24px 0/2, atkinson_hyperlegible_light_8px 0/2, atkinson_hyperlegible_light_10px 0/2, atkinson_hyperlegible_light_12px 2/2, atkinson_hyperlegible_light_14px 2/2, atkinson_hyperlegible_light_16px 2/2, atkinson_hyperlegible_light_18px 2/2, atkinson_hyperlegible_light_20px 2/2, atkinson_hyperlegible_light_22px 2/2, atkinson_hyperlegible_light_24px 2/2, atkinson_hyperlegible_dark_8px 2/2, atkinson_hyperlegible_dark_10px 2/2, atkinson_hyperlegible_dark_12px 0/2, atkinson_hyperlegible_dark_14px 2/2, atkinson_hyperlegible_dark_16px 2/2, atkinson_hyperlegible_dark_18px 2/2, atkinson_hyperlegible_dark_20px 2/2, atkinson_hyperlegible_dark_22px 2/2, atkinson_hyperlegible_dark_24px 0/2, jetbrains_mono_light_8px 2/2, jetbrains_mono_light_10px 2/2, jetbrains_mono_light_12px 2/2, jetbrains_mono_light_14px 0/2, jetbrains_mono_light_16px 2/2, jetbrains_mono_light_18px 0/2, jetbrains_mono_light_20px 2/2, jetbrains_mono_light_22px 2/2, jetbrains_mono_light_24px 2/2, jetbrains_mono_dark_8px 0/2, jetbrains_mono_dark_10px 2/2, jetbrains_mono_dark_12px 0/2, jetbrains_mono_dark_14px 2/2, jetbrains_mono_dark_16px 0/2, jetbrains_mono_dark_18px 2/2, jetbrains_mono_dark_20px 2/2, jetbrains_mono_dark_22px 2/2, jetbrains_mono_dark_24px 2/2
+  courier_prime_dark: 100.0%
+  atkinson_hyperlegible_light: 88.9%
+  atkinson_hyperlegible_dark: 88.9%
+  jetbrains_mono_light: 100.0%
+  jetbrains_mono_dark: 77.8%
+Phrase detections across runs: arimo_light_8px 0/3, arimo_light_10px 3/3, arimo_light_12px 3/3, arimo_light_14px 3/3, arimo_light_16px 3/3, arimo_light_18px 3/3, arimo_light_20px 3/3, arimo_light_22px 3/3, arimo_light_24px 3/3, arimo_dark_8px 3/3, arimo_dark_10px 0/3, arimo_dark_12px 3/3, arimo_dark_14px 3/3, arimo_dark_16px 3/3, arimo_dark_18px 3/3, arimo_dark_20px 3/3, arimo_dark_22px 3/3, arimo_dark_24px 3/3, courier_prime_light_8px 0/3, courier_prime_light_10px 3/3, courier_prime_light_12px 3/3, courier_prime_light_14px 3/3, courier_prime_light_16px 3/3, courier_prime_light_18px 3/3, courier_prime_light_20px 3/3, courier_prime_light_22px 3/3, courier_prime_light_24px 3/3, courier_prime_dark_8px 3/3, courier_prime_dark_10px 3/3, courier_prime_dark_12px 3/3, courier_prime_dark_14px 3/3, courier_prime_dark_16px 3/3, courier_prime_dark_18px 3/3, courier_prime_dark_20px 3/3, courier_prime_dark_22px 3/3, courier_prime_dark_24px 3/3, atkinson_hyperlegible_light_8px 0/3, atkinson_hyperlegible_light_10px 3/3, atkinson_hyperlegible_light_12px 3/3, atkinson_hyperlegible_light_14px 3/3, atkinson_hyperlegible_light_16px 3/3, atkinson_hyperlegible_light_18px 3/3, atkinson_hyperlegible_light_20px 3/3, atkinson_hyperlegible_light_22px 3/3, atkinson_hyperlegible_light_24px 3/3, atkinson_hyperlegible_dark_8px 0/3, atkinson_hyperlegible_dark_10px 3/3, atkinson_hyperlegible_dark_12px 3/3, atkinson_hyperlegible_dark_14px 3/3, atkinson_hyperlegible_dark_16px 3/3, atkinson_hyperlegible_dark_18px 3/3, atkinson_hyperlegible_dark_20px 3/3, atkinson_hyperlegible_dark_22px 3/3, atkinson_hyperlegible_dark_24px 3/3, jetbrains_mono_light_8px 3/3, jetbrains_mono_light_10px 3/3, jetbrains_mono_light_12px 3/3, jetbrains_mono_light_14px 3/3, jetbrains_mono_light_16px 3/3, jetbrains_mono_light_18px 3/3, jetbrains_mono_light_20px 3/3, jetbrains_mono_light_22px 3/3, jetbrains_mono_light_24px 3/3, jetbrains_mono_dark_8px 0/3, jetbrains_mono_dark_10px 3/3, jetbrains_mono_dark_12px 0/3, jetbrains_mono_dark_14px 3/3, jetbrains_mono_dark_16px 3/3, jetbrains_mono_dark_18px 3/3, jetbrains_mono_dark_20px 3/3, jetbrains_mono_dark_22px 3/3, jetbrains_mono_dark_24px 3/3
 
 Full-image OCR output (representative run):
 Fixed OCR phrases - four font quadrants - light and dark side by side - 8-24px
+
 Each font quadrant pairs the same fixed phrases in light and dark colors. Rows run from 8px through 24px; no text or phrase positions are randomized.
 
-Arimo Courier Prime
+Arimo
 
-Proportional - similar |, |, and 1 Fixed width - similar 0 and O
-Light mode Dark mode Light mode Dark mode
-111] OO80 111] OO80 0080 111] 0080 111]
-Fs) quiver cabinet frozen 4827316 8px cobalt meadow sparrow 6248193 8p amber hollow brisk 6042817 8px foxglove kettle shimmer 3918274
-10px kitchen thistle willow 9152048 10px ginger thimble lantern 3085726 10px distant clever rusty 2379150 10px breezy acrobat plumage 7604318
-i2ex velvet wagon kernel 6371852 i2px plucky walnut blossom 9514068 12ex lantern meadow engine 8963402 12px cinnamon rocket fern 2185693
-i4ox_ ivory violin lilac 2846901 i4px_ Crystal meadow spindle 4720631 i4x Orchard compass thunder 4517286 14x puzzling hammock cricket 8452071
-16x million pillar valley 7538164 16x marigold tumble velvet 8163952 6x pebble window river 7280641 6x dandelion turnip comet 6301948
-iex yellow zephyr pocket 1964370 i@x Sprightly cedar acorn 2397485 wx Signal carpet garden 3158924 x flannel hummingbird biscuit 1729580
-2» ribbon glacier gentle 5283047 2x twilight pebble daisy 7051824 2x falcon mirror copper 9701365 2x sunflower zipper lagoon 5046832
-2x Sailor silver basket 8416729 2x SUNbeam orchard fiddle 1836409 2x Willow ember quartz 5834270 2x Cucumber labyrinth toast 9872146
-xx. tunnel marlin nickel 3709581 a. Whimsy pocket bracken 5472916 ux AGrift marble saddle 1426893 ux Lrosty macaroni velvet 3268059
+Courier Prime
 
-Atkinson Hyperlegible JetBrains Mono
+Fixed width - similar 0 and O
 
-Proportional - distinct |, |, 1, 0, O Fixed width - distinct 1,0,0
-Light mode Dark mode Light mode Dark mode
-Itt] 8080 Ili] 8080 Il1| 0080 I11] 0080
-8p tuncra whisper anchor 6102753 8px lavender hammock orbit 4173602 &p walnut fabric jungle 7562184 8px tangerine cobweb puddle 8157284
-10px million illicit rooftop 3694182 10px raspberry compass flint 8526914 10px kettle Lemon marlin 1846372 10px knapsack oatmeal igloo 4623185
-12px_ violin pillar olive 7429516 12px jovial penguin trinket 2964387 22ox orbit parcel quiver 6294051 12 dizzy firefly velvet 9385716
-i4px_ morning balloon mountain 2057839 i4px pancake meadow zeppelin 7391052 i4xx Paven sparrow timber 8431706 ix banjo waterfall mitten 2746039
-‘6x Cornet noodle holiday 6841327 16x whistle acorn sapphire 5812763 i6ox Umber vessel wagon 2975318 6x DLueberry orbit whisker 6581942
-‘sx pilot library iodine 9315604 ‘gx Marshmallow tumble reed 9438206 ‘x Dramble cinder dolphin 5108642 x Marble jellyfish tumble 1038467
-2x Camera planet forest 4178295 ax velvet cactus tambourine 1657943 »x fennel granite hazel 9724163 ox peppermint thicket banister 7462951
-2 Candle blanket oyster 5682041 2x biscuit thunder daffodil 6284317 2x JUNiper kernel Linen 4350897 2x Kangaroo teacup frost 5290738
-zx Magnet pocket thistle 2937468 xu gossamer pickle lantern 3749561 ux MOSaic nectar opal 1683245 ux Quartz badger ribbon 3816470
+Proportional - similar |, |, and 1
+
+Light mode
+
+Dark mode
+
+Light mode
+
+Dark mode
+
+11| 0080
+
+0080 Il1]
+
+0080 Il1]
+
+|‘111 0080
+
+wver cabinet |
+
+n 482732
+
+6
+
+cobalt meadow sparrow 6248193
+
+anber
+
+X
+
+4
+
+foxglove kettle shimmer 3918274
+
+kitchen thistle willow 9152048
+
+ginger thimble lantem 3085726
+
+distant clever rusty 2379150
+
+breezy acrobat plumage 7604318
+
+velvet wagon kernel 6371852
+
+P
+
+plucky walnut blossom 9514068
+
+lantern meadow engine 8963402
+
+cinnamon rocket fern 2185693
+
+ivory violin lilac 2846901
+
+<P
+
+crystal meadow spindle 4720631
+
+orchard compass thunder 4517286
+
+puzzling hammock cricket 8452071
+
+X
+
+million pillar valley 7538164
+
+marigold tumble velvet 8163952
+
+pebble window river 7280641
+
+dandelion turnip comet 6301948
+
+yellow zephyr pocket 1964370
+
+sprightly cedar acorn 2397485
+
+signal carpet garden 3158924
+
+flannel hummingbird biscuit 1729580
+
+ribbon glacier gentle 5283047
+
+twilight pebble daisy 7051824
+
+falcon mirror copper 9701365
+
+sunflower zipper lagoon 5046832
+
+sailor silver basket 8416729
+
+yri
+
+sunbeam orchard fiddle 1836409
+
+willow ember quartz 5834270
+
+cucumber labyrinth toast 9872146
+
+tunnel marlin nickel 3709581
+
+4
+
+whimsy pocket bracken 5472916
+
+drift marble saddle 1426893
+
+4
+
+frosty macaroni velvet 3268059
+
+Atkinson Hyperlegible
+
+JetBrains Mono
+
+Proportional - distinct |, |, 1
+
+U
+
+N
+
+-
+
+|
+
+n
+
+v, U
+
+P
+
+Light mode
+
+Dark mode
+
+Light mode
+
+Dark mode
+
+Il1] 8080
+
+Il1] 8080
+
+Il
+
+0080
+
+I11| 8080
+
+tundra whisper anchor §102753
+
+Lvender hammock orbit 4173002
+
+walnut fabric jungle 7562184
+
+tangerine cobwed puddle B157284
+
+million illicit rooftop 3604182
+
+raspberry compass flint 8526914
+
+kettle lemon marlin 1846372
+
+knapsack oatmeal igloo 4623185
+
+violin pillar olive 7429516
+
+jovial penguin trinket 2064387
+
+orbit parcel quiver 6294051
+
+P
+
+dizzy firefly velvet 9385716
+
+4p:
+
+pancake meadow zeppelin 7391052
+
+morning balloon mountain 2057839
+
+raven sparrow timber 8431706
+
+banjo waterfall mitten 2746039
+
+cornet noodle holiday 6841327
+
+whistle acorn sapphire 5812763
+
+umber vessel wagon 2975318
+
+blueberry orbit whisker 6581942
+
+pilot library iodine 9315604
+
+marshmallow tumble reed 9438206
+
+bramble cinder dolphin 5108642
+
+marble jellyfish tumble 1038467
+
+camera planet forest 4178295
+
+velvet cactus tambourine 1657943
+
+fennel granite hazel 9724163
+
+peppermint thicket banister 7462951
+
+rri
+
+biscuit thunder daffodil 6284317
+
+candle blanket oyster 5682041
+
+juniper kernel linen 4350897
+
+&L
+
+kangaroo teacup frost 5290738
+
+24
+
+magnet pocket thistle 2937468
+
+24px
+
+gossamer pickle lantern 3749501
+
+mosaic nectar opal 1683245
+
+4
+
+quartz badger ribbon 3816470
