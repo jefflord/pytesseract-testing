@@ -1,4 +1,7 @@
 Configuration: full_image_color_x3_psm11
+Benchmark host OS: Linux-7.2.5-3-omarchy-x86_64-with-glibc2.44
+Benchmark host CPU: Intel(R) Core(TM) i3-10100F CPU @ 3.60GHz
+Benchmark host GPU: Tul Corporation / PowerColor Radeon RX 580
 Fully exact runs: 0/3
 Phrase accuracy across runs: 90.28%
 Median OCR: 9587.68 ms

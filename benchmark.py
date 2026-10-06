@@ -6,11 +6,14 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import re
+import subprocess
 import statistics
 import sys
 import time
 import unicodedata
+import platform
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +40,89 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit-configs", type=int, help="Run only the first N configs; useful for a quick smoke test.")
     parser.add_argument("--psm", type=int, nargs="+", choices=range(3, 14), default=list(DEFAULT_PSMS), help="Page segmentation modes to compare.")
     return parser.parse_args()
+
+
+def get_host_hardware() -> dict[str, str]:
+    system = platform.system()
+
+    def run(command: list[str]) -> str:
+        try:
+            return subprocess.run(
+                command, capture_output=True, text=True, check=False, timeout=5
+            ).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            return ""
+
+    cpu = platform.processor().strip()
+    if system == "Windows":
+        for shell in ("powershell.exe", "pwsh"):
+            output = run([
+                shell, "-NoProfile", "-Command",
+                "(Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name)",
+            ])
+            if output:
+                cpu = output.splitlines()[0].strip()
+                break
+        cpu = cpu or os.environ.get("PROCESSOR_IDENTIFIER", "").strip()
+    elif system == "Darwin":
+        cpu = run(["sysctl", "-n", "machdep.cpu.brand_string"]) or cpu
+
+    cpu_info = Path("/proc/cpuinfo") if system == "Linux" else None
+    if cpu_info and cpu_info.is_file() and not cpu:
+        for line in cpu_info.read_text(encoding="utf-8", errors="replace").splitlines():
+            if line.lower().startswith(("model name", "hardware")) and ":" in line:
+                cpu = line.split(":", 1)[1].strip()
+                break
+    if not cpu:
+        cpu = platform.machine() or "Unknown"
+
+    gpus: list[str] = []
+    if system == "Windows":
+        for shell in ("powershell.exe", "pwsh"):
+            output = run([
+                shell, "-NoProfile", "-Command",
+                "Get-CimInstance Win32_VideoController | ForEach-Object { $_.Name }",
+            ])
+            names = [line.strip() for line in output.splitlines() if line.strip()]
+            if names:
+                gpus = names
+                break
+    elif system == "Darwin":
+        output = run(["system_profiler", "SPDisplaysDataType"])
+        gpus = [
+            line.split(":", 1)[1].strip()
+            for line in output.splitlines()
+            if line.strip().startswith("Chipset Model:")
+        ]
+    elif system == "Linux":
+        try:
+            devices = run(["lspci", "-mm"]).splitlines()
+        except (OSError, subprocess.SubprocessError, csv.Error):
+            devices = []
+        for line in devices:
+            try:
+                fields = next(csv.reader([line], delimiter=" ", quotechar='"', skipinitialspace=True))
+            except csv.Error:
+                continue
+            if len(fields) > 2 and fields[1].startswith(("VGA", "3D", "Display")):
+                gpus.append(" ".join(fields[6:8]) if len(fields) > 7 and fields[6] else " ".join(fields[2:4]))
+
+    if not gpus:
+        for command in (
+            ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+            ["rocm-smi", "--showproductname"],
+        ):
+            output = run(command)
+            names = [line.strip() for line in output.splitlines() if line.strip()]
+            if names:
+                gpus = names
+                break
+
+    return {
+        "os": platform.platform() or system or "Unknown",
+        "cpu": cpu,
+        "gpu": ", ".join(gpus) if gpus else "Not detected",
+    }
 
 
 def normalize(text: str) -> str:
@@ -278,11 +364,13 @@ def write_html(path: Path, report: dict[str, Any]) -> None:
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,#18304a 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1600px;margin:auto;padding:38px 28px 70px}h1{font-size:clamp(1.8rem,4vw,2.8rem);margin:0;letter-spacing:-.04em}.subtitle{color:var(--muted);margin:8px 0 26px}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:14px;margin-bottom:24px}.card,.toolbar,.table-wrap{background:linear-gradient(145deg,#142238,var(--panel));border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 35px #0002}.card{padding:17px 19px}.label{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.value{font-size:1.35rem;font-weight:700;margin-top:5px;overflow-wrap:anywhere}.toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;padding:16px;margin-bottom:15px}.control{display:grid;gap:5px}.control label{font-size:.78rem;color:var(--muted)}input,select{color:var(--text);background:#0d1727;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit;min-width:145px}input[type=search]{min-width:min(360px,80vw)}.count{margin-left:auto;color:var(--muted);padding:10px 0}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top}th{position:sticky;top:0;background:#17253a;color:#bacbe0;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;z-index:1}th button{color:inherit;background:none;border:0;font:inherit;text-transform:inherit;letter-spacing:inherit;padding:0;cursor:pointer}tbody tr:hover{background:#ffffff08}.config{font-weight:650;white-space:nowrap}.pill{display:inline-block;padding:3px 8px;border-radius:99px;background:#21334b;color:#d8e7fa;font-size:.82rem}.accuracy{font-weight:750;color:var(--accent)}.small-size{font-weight:650;color:var(--gold)}.muted{color:var(--muted)}details summary{cursor:pointer;color:var(--blue);font-weight:600}.detail{min-width:440px;max-width:760px;padding:10px 0}.detail h3{margin:14px 0 7px;font-size:.95rem}.bars{display:grid;grid-template-columns:repeat(3,minmax(130px,1fr));gap:8px 16px}.baritem{font-size:.8rem}.barlabel{display:flex;justify-content:space-between;gap:8px}.track{height:6px;border-radius:8px;background:#26364a;margin-top:4px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#48c9a0,#a4edca)}.font-grid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:6px 14px}.font-item{color:#d4deeb;font-size:.83rem}.transcript{white-space:pre-wrap;overflow:auto;max-height:420px;padding:12px;background:#0b1422;border:1px solid var(--line);border-radius:8px;font:12px/1.55 ui-monospace,SFMono-Regular,monospace}.empty{padding:35px;text-align:center;color:var(--muted)}.foot{color:var(--muted);font-size:.83rem;margin-top:15px}@media(max-width:800px){main{padding:24px 14px 50px}.cards{grid-template-columns:repeat(2,minmax(130px,1fr))}.count{margin-left:0;width:100%}.bars{grid-template-columns:repeat(2,minmax(120px,1fr))}}
 .best-breakdown{display:grid;grid-template-columns:minmax(280px,1fr) minmax(340px,1.4fr);gap:14px;margin:-8px 0 24px}.breakdown-panel{padding:19px;background:linear-gradient(145deg,#142238,var(--panel));border:1px solid var(--line);border-radius:15px}.breakdown-panel h2{margin:0 0 14px;font-size:1rem}.mode-pills{display:flex;gap:10px;flex-wrap:wrap}.mode-pill{background:#0d1727;border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:130px}.mode-pill span{display:block;color:var(--muted);font-size:.78rem}.mode-pill b{font-size:1.25rem;color:var(--accent)}.size-tiles{display:grid;grid-template-columns:repeat(5,minmax(70px,1fr));gap:8px}.size-tile{padding:9px 10px;border-radius:9px;background:#0d1727;border:1px solid var(--line)}.size-tile.perfect{border-color:#39866f;background:#123126}.size-tile span{display:block;color:var(--muted);font-size:.75rem}.size-tile b{color:var(--text)}.font-mode-summary{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:8px 14px}.font-mode-summary .font-item{padding:8px 10px;background:#0d1727;border-radius:8px}.font-mode-summary strong{color:var(--gold)}@media(max-width:800px){.best-breakdown{grid-template-columns:1fr}}
 .candidate-section{margin:0 0 25px}.candidate-section h2{font-size:1.2rem;margin:0 0 5px}.candidate-section>p{color:var(--muted);margin:0 0 12px}.candidate-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;padding:13px 15px;margin-bottom:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px}.candidate-tools label{display:grid;gap:4px;color:var(--muted);font-size:.78rem}.candidate-tools input,.candidate-tools select{min-width:190px}.candidate-tools .count{padding:8px 0}.candidate-table{max-height:570px}.candidate-table table{min-width:850px}.candidate-table th{top:0}.candidate-table td{padding:9px 12px}.candidate-table tr.top-choice{background:#153126}
+.hardware{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:-8px 0 24px}.hardware-item{padding:13px 17px;background:var(--panel);border:1px solid var(--line);border-radius:12px}.hardware-item span{display:block;color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.07em}.hardware-item strong{display:block;margin-top:3px;overflow-wrap:anywhere}@media(max-width:600px){.hardware{grid-template-columns:1fr}}
 </style>
 </head>
 <body><main>
 <h1>OCR Benchmark Results</h1>
 <p class="subtitle" id="meta"></p>
+<section class="hardware" id="hardware"></section>
 <section class="cards" id="summary"></section>
 <section class="best-breakdown" id="best-breakdown"></section>
 <section class="candidate-section"><h2>All configuration results</h2><p>Compare phrase detection, smallest fully detected text size, and timing for every benchmark configuration.</p></section>
@@ -305,6 +393,7 @@ const pct = value => `${(Number(value || 0) * 100).toFixed(1)}%`;
 const ms = value => `${(Number(value || 0) / 1000).toFixed(2)} s`;
 const best = results[0] || {};
 document.getElementById("meta").textContent = `${report.image || "Image"} · ${(report.image_size || []).join(" × ")} · Tesseract ${report.tesseract_version || "unknown"} · ${report.repeats || 0} measured repeat(s)`;
+document.getElementById("hardware").innerHTML = `<div class="hardware-item"><span>Operating system</span><strong>${esc(report.host_hardware?.os || "Unknown")}</strong></div><div class="hardware-item"><span>Benchmark CPU</span><strong>${esc(report.host_hardware?.cpu || "Not detected")}</strong></div><div class="hardware-item"><span>Benchmark GPU</span><strong>${esc(report.host_hardware?.gpu || "Not detected")}</strong></div>`;
 const smallest = best.smallest_100pct_size_px == null ? "Not reached" : `${best.smallest_100pct_size_px}px`;
 const summary = [
  ["Top configuration", best.config || "No results"],
@@ -384,6 +473,7 @@ def main() -> int:
         tesseract_version = str(pytesseract.get_tesseract_version())
     except pytesseract.TesseractNotFoundError as error:
         raise SystemExit(f"Tesseract executable not found. Install Tesseract or add it to PATH.\n{error}") from error
+    host_hardware = get_host_hardware()
 
     # Pay the one-time Python/Tesseract startup cost before taking timings.
     pytesseract.image_to_string(image, lang="eng", config="--oem 3 --psm 3")
@@ -422,8 +512,10 @@ def main() -> int:
         "image": str(args.image),
         "image_size": list(image.size),
         "tesseract_version": tesseract_version,
+        "host_hardware": host_hardware,
         "truth_file": str(args.truth),
         "repeats": args.repeats,
+        "host_hardware": host_hardware,
         "ground_truth_phrases": expected,
         "scoring": "Each expected phrase is found when its contiguous case- and punctuation-insensitive word sequence occurs anywhere in the full-image OCR output. Results include aggregate detection accuracy for light versus dark mode, font/mode pairs, and each text size. The smallest 100%-readable size is the smallest tested size at which every phrase at that size is found on every repeat; it is also reported per font/mode pair.",
         "ranking": "all repeats containing every phrase first, then most fully exact repeats, phrase accuracy, and end-to-end milliseconds",
@@ -457,6 +549,9 @@ def main() -> int:
     )
     (args.output_dir / "best.txt").write_text(
         f"Configuration: {best['config']}\n"
+        f"Benchmark host OS: {host_hardware['os']}\n"
+        f"Benchmark host CPU: {host_hardware['cpu']}\n"
+        f"Benchmark host GPU: {host_hardware['gpu']}\n"
         f"Fully exact runs: {best['fully_exact_runs']}/{best['runs']}\n"
         f"Phrase accuracy across runs: {best['phrase_accuracy']:.2%}\n"
         f"Median OCR: {best['ocr_ms']:.2f} ms\n"
