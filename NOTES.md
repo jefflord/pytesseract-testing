@@ -2,7 +2,7 @@
 
 ## Goal
 
-Find a fast and reliable Tesseract setup for recognizing known phrases in a 4K screenshot, without assuming where in the image those phrases appear. The current image is `test_files/FontQuadrantsDemo.jpg` (3840×2160). The companion HTML has fixed text; `ground_truth.json` lists the expected phrases for its current screenshot.
+Find a fast and reliable Tesseract setup for recognizing known phrases in a 4K screenshot, without assuming where in the image those phrases appear. The current default image is `test_files/FontQuadrantsDemo.png` (3840×2160). The companion HTML has fixed text; `ground_truth.json` lists the expected phrases for its current screenshot.
 
 ## Location-independent benchmark
 
@@ -16,7 +16,7 @@ The default sweep compares four image preparations (color, grayscale, grayscale 
 
 - `benchmark.py` — full-image configuration sweep, scoring, timing, and result generation.
 - `ground_truth.json` — expected phrases only; intentionally contains no coordinates.
-- `test_files/FontQuadrantsDemo.jpg` — default benchmark image.
+- `test_files/FontQuadrantsDemo.png` — default benchmark image.
 - `results_light_dark/results.csv` — ranked metrics, per-phrase detections, light-vs-dark accuracy, and full OCR output.
 - `results_light_dark/results.json` — detailed output and run metadata.
 - `results_light_dark/best.txt` — fastest configuration that found every expected phrase on every repeat, or best phrase detection rate otherwise.

@@ -23,7 +23,7 @@ import pytesseract
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_TRUTH = ROOT / "ground_truth.json"
-DEFAULT_IMAGE = ROOT / "test_files" / "FontQuadrantsDemo.jpg"
+DEFAULT_IMAGE = ROOT / "test_files" / "FontQuadrantsDemo.png"
 METHODS = ("color", "grayscale", "autocontrast", "otsu")
 SCALES = (1, 2, 3)
 DEFAULT_PSMS = (3, 6, 11, 12)
@@ -193,7 +193,7 @@ def measure_config(
     repeats: int,
 ) -> dict[str, Any]:
     runs = []
-    config_name = f"full_image_{config['method']}_x{config['scale']}_psm{config['psm']}"
+    config_name = f"{config['method']}_x{config['scale']}_psm{config['psm']}"
     normalized_expected = {name: normalize(phrase).split() for name, phrase in expected.items()}
     for _ in range(repeats):
         start = time.perf_counter()

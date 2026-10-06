@@ -1,6 +1,6 @@
 # Pytesseract full-image screenshot benchmark
 
-Benchmarks Tesseract on the **entire** 4K screenshot at `test_files/FontQuadrantsDemo.jpg`. The benchmark does not crop around known text, pass bounding boxes to Tesseract, or use phrase coordinates. Its only ground truth is the set of expected phrases in `ground_truth.json`; a phrase is counted as found if it appears anywhere in Tesseract's full-image OCR output. The companion `test_files/FontQuadrantsDemo.html` contains fixed phrases (no randomization), text sizes from 8px through 24px, and four font quadrants. Each quadrant places light and dark samples side by side, with different phrases for the two modes; each phrase ends with a seven-digit number.
+Benchmarks Tesseract on the **entire** 4K screenshot at `test_files/FontQuadrantsDemo.png` (the default image). The benchmark does not crop around known text, pass bounding boxes to Tesseract, or use phrase coordinates. Its only ground truth is the set of expected phrases in `ground_truth.json`; a phrase is counted as found if it appears anywhere in Tesseract's full-image OCR output. The companion `test_files/FontQuadrantsDemo.html` contains fixed phrases (no randomization), text sizes from 8px through 24px, and four font quadrants. Each quadrant places light and dark samples side by side, with different phrases for the two modes; each phrase ends with a seven-digit number.
 
 The benchmark compares original color, grayscale, grayscale with autocontrast, and Otsu thresholding; 1×, 2×, and 3× image scales; and Tesseract page segmentation modes 3, 6, 11, and 12 by default. Adjust the PSM set with `--psm`.
 
@@ -13,7 +13,7 @@ python -m pip install -r requirements.txt
 python benchmark.py --repeats 5
 ```
 
-The default image path is `test_files/FontQuadrantsDemo.jpg`. To use a different image or phrase list:
+The default image path is `test_files/FontQuadrantsDemo.png`. To use a different image or phrase list:
 
 ```powershell
 python benchmark.py --image "C:\path\to\screenshot.jpg" --truth .\ground_truth.json
